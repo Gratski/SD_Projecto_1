@@ -1,4 +1,1 @@
-main.o
-entry.o
-list.o
-data.o
+*.o
