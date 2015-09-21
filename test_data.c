@@ -22,7 +22,7 @@ int testCreate2() {
 	char *data_s = strdup("1234567890abc");
 	struct data_t *data = data_create2(data_size,data_s);
 
-	result = (data->data == data_s) &&
+	result = (data->data != data_s) &&
                  (data->datasize == data_size);
 
 	data_destroy(data);
