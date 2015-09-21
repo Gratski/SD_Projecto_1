@@ -1,2 +1,4 @@
-*.o
-projecto_1
+main.o
+entry.o
+list.o
+data.o
