@@ -124,7 +124,7 @@ int list_add(struct list_t *list, struct entry_t *entry){
 int list_remove(struct list_t *list, char *key){
 
 	
-	
+	return 0;
 
 }
 
