@@ -1,3 +1,17 @@
+CC=gcc
+CFLAGS= -g -Wall
+
+
+test_data: test_data.o data.o
+	$(CC) -o test_data test_data.o data.o
+
+test_entry: test_entry.o data.o entry.o
+	$(CC) -o test_entry test_entry.o data.o entry.o
+
+test_list: test_list.o list.o entry.o data.o
+	$(CC) -o test_list test_list.o list.o entry.o data.o
+
+
 compile: main.o data.o entry.o list.o
 	gcc -o projecto_1 main.o data.o entry.o list.o
 
