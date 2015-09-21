@@ -34,8 +34,6 @@ void list_destroy(struct list_t *list){
 	struct node_t *cur = list->head;
 	struct node_t *aux = list->head;
 
-	printf("a apagar...\n");
-
 	while(cur != NULL){
 		
 		entry_destroy(cur->entry);		
