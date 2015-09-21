@@ -1,6 +1,7 @@
 CC=gcc
 CFLAGS= -g -Wall
 
+default: compile
 
 test_data: test_data.o data.o
 	$(CC) -o test_data test_data.o data.o $(CFLAGS)

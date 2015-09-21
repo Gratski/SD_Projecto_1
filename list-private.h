@@ -2,15 +2,15 @@
 #define _LIST_PRIVATE_H
 
 /* No de uma lista duplamente ligada */
-struct node{
+struct node_t{
 	struct entry_t *entry;	// entry
-	struct node *next;		// proxima entry
+	struct node_t *next;		// proxima entry
 };
 
 /* ver list.h doc */
 struct list_t{
 	int size;			// numero de entradas da lista
-	struct node *head;	// head da lista
+	struct node_t *head;	// head da lista
 }; 
 
 

@@ -31,8 +31,8 @@ void list_destroy(struct list_t *list){
 	if( list == NULL )
 		return;
 
-	struct node *cur = list->head;
-	struct node *aux = list->head;
+	struct node_t *cur = list->head;
+	struct node_t *aux = list->head;
 
 	printf("a apagar...\n");
 
@@ -53,7 +53,7 @@ void list_destroy(struct list_t *list){
 /* view .h doc */
 int list_add(struct list_t *list, struct entry_t *entry){
 
-	struct node *node = (struct node *) malloc(sizeof( struct node ));
+	struct node_t *node = (struct node_t *) malloc(sizeof( struct node_t ));
 	node->entry = entry;
 
 	// se a lista eh vazia
@@ -74,8 +74,8 @@ int list_add(struct list_t *list, struct entry_t *entry){
 
 		int added = 0;	
 		
-		struct node *cur = list->head;
-		struct node *auxPrev = NULL;
+		struct node_t *cur = list->head;
+		struct node_t *auxPrev = NULL;
 
 		while( cur != NULL )
 		{
@@ -99,6 +99,11 @@ int list_add(struct list_t *list, struct entry_t *entry){
 				added = 1;
 				break;
 			}
+			else if( code == 0 )
+			{
+				entry_destroy(cur->entry);
+				cur->entry = entry;
+			}
 
 			auxPrev = cur;
 			cur = cur->next;
@@ -115,23 +120,51 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	}
 
 	list->size = list->size + 1;
-	return 0;
-	
+	return 0;	
 }
 
 
 /* view .h doc */
 int list_remove(struct list_t *list, char *key){
 
-	
-	return 0;
+	// se estah vazia ou nao foi alocada
+	if ( list == NULL || list->size == 0 )
+		return -1;
 
+	struct node_t *cur = list->head; 	
+	struct node_t *auxPrev = NULL;		// aponta para o indice anterior ao actual
+
+	while( cur != NULL )
+	{
+
+		if( strcmp(key, cur->entry->key) == 0 )
+		{
+
+			// se nao estah na 1a posicao
+			if( auxPrev != NULL )
+				auxPrev->next = cur->next;
+			else
+				list->head = cur->next;
+
+			list->size--;
+			entry_destroy(cur->entry);
+			free(cur);
+
+			return 0;
+		}
+
+		auxPrev = cur;
+		cur = cur->next;
+
+	}
+
+	return -1;
 }
 
 /* view .h doc */
 struct entry_t *list_get(struct list_t *list, char *key){
 
-	struct node *cur = list->head;
+	struct node_t *cur = list->head;
 
 	// percorre a lista
 	while(cur != NULL)
@@ -169,17 +202,17 @@ int list_size(struct list_t *list){
 char **list_get_keys(struct list_t *list){
 
 	// array com tamanho para todos os pointers para strings
-	char **arr = malloc(sizeof(char *) * list_size(list));
+	char **arr = malloc(sizeof(char *) * (list_size(list) + 1));
 	
 	//primeiro node da lista
-	struct node *cur = list->head;
+	struct node_t *cur = list->head;
 	int i = 0;
 
 	//ciclo para obter as keys da lista
 	while( cur != NULL )
 	{
 		// escreve em indice "i" a current entry key
-		arr[i] = cur->entry->key;
+		arr[i] = strdup(cur->entry->key);
 
 		//avança pointer de lista
 		cur = cur->next;
@@ -196,16 +229,10 @@ char **list_get_keys(struct list_t *list){
 void list_free_keys(char **keys){
 
 	int i = 0;
-	char *cur = keys[i];
 
 	// percorre ateh ao final do array
-	while(cur != NULL)
-	{
-		
+	for(i = 0; keys[i] != NULL; i++)
 		free(keys[i]);
-		cur = keys[++i];
-
-	}
 
 	// liberta memoria de array
 	free(keys);
@@ -218,7 +245,7 @@ void list_free_keys(char **keys){
 */
 void list_print(struct list_t *list){
 
-	struct node *cur = list->head;
+	struct node_t *cur = list->head;
 
 	while(cur != NULL)
 	{

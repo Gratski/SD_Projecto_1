@@ -176,6 +176,10 @@ int testGetKeys() {
 	printf("key 2: %d\n", strcmp(keys[2],e3->key) == 0);
 	printf("key 3: %d\n", keys[3] == NULL);
 
+	
+	//printf("\ne3 : %d\n\n", strcmp(keys[0],e3->key));
+
+
 	result = strcmp(keys[0],e3->key) == 0 && keys[0] != e3->key &&
                  strcmp(keys[1],e2->key) == 0 && keys[1] != e2->key &&
                  strcmp(keys[2],e1->key) == 0 && keys[2] != e1->key &&
