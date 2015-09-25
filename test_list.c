@@ -58,8 +58,9 @@ int testAddVarios() {
 	result = (list_size(list) == 1024);
 
 	for(i=0; i<1024; i++) {
-		assert(list_get(list,entry[i]->key) == entry[i]);
-		result = result && (list_get(list,entry[i]->key) == entry[i]);
+		struct entry_t *assert_entry = list_get(list, entry[i]->key);
+		assert(assert_entry == entry[i]);
+		result = result && (strcmp(assert_entry->key, entry[i]) == 0);
 	}
 
 	list_destroy(list);
