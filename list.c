@@ -45,7 +45,7 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	if (list == NULL)
 		return -1;
 
-	struct node_t* node = malloc(sizeof (struct node_t));
+	struct node_t* node = (struct node_t *) malloc(sizeof (struct node_t));
 
 	if (node == NULL)
 		return -1;
@@ -53,9 +53,9 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	// preparar node a ser inserido na lista
 	node->entry = entry;
 	node->next = NULL;
-	
 
-	struct node_t* current = current = list->head;
+
+	struct node_t* current = list->head;
 	struct node_t* previous = current;
 
 	// lista vazia
@@ -130,6 +130,7 @@ int list_remove(struct list_t *list, char *key){
 
 	}
 
+	// se nao encontrou
 	return -1;
 }
 
