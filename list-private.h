@@ -11,7 +11,7 @@ struct node_t{
 struct list_t{
 	int size;			// numero de entradas da lista
 	struct node_t *head;	// head da lista
-}; 
+};
 
 
 /* Imprime lista no ecra */

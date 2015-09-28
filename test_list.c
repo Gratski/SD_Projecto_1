@@ -165,21 +165,25 @@ int testGetKeys() {
 	list_add(list,e2);
 	list_add(list,e3);
 
+	// array ordenado por ordem ascendente
 	keys = list_get_keys(list);
-	// ordem descendente esta a fazer o teste falhar
-	// ordenar antes por essa ordem?
+
 	printf("key e1: %s\n", e1->key);
 	printf("key e2: %s\n", e2->key);
 	printf("key e3: %s\n", e3->key);
-	printf("key 0: %d\n", strcmp(keys[0],e1->key) == 0);
-	printf("key 1: %d\n", strcmp(keys[1],e2->key) == 0);
+	puts("---");
+	printf("key a1: %s\n", keys[0]);
+	printf("key a2: %s\n", keys[1]);
+	printf("key a3: %s\n", keys[2]);
+	puts("---");
+	printf("key 0: %d\n", strcmp(keys[0],e2->key) == 0);
+	printf("key 1: %d\n", strcmp(keys[1],e1->key) == 0);
 	printf("key 2: %d\n", strcmp(keys[2],e3->key) == 0);
 	printf("key 3: %d\n", keys[3] == NULL);
 
-
-	result = strcmp(keys[0],e3->key) == 0 && keys[0] != e3->key &&
-                 strcmp(keys[1],e2->key) == 0 && keys[1] != e2->key &&
-                 strcmp(keys[2],e1->key) == 0 && keys[2] != e1->key &&
+	result = strcmp(keys[0],e2->key) == 0 && keys[0] != e2->key &&
+                 strcmp(keys[1],e1->key) == 0 && keys[1] != e1->key &&
+                 strcmp(keys[2],e3->key) == 0 && keys[2] != e3->key &&
                  keys[3] == NULL;
 
 	//TODO nao funciona

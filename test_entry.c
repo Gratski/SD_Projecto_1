@@ -10,8 +10,7 @@ int testCreate() {
 
 	struct entry_t *entry = entry_create(key,value);
 
-	int result = (entry->key == key) &&
-                     (entry->value == value);
+	int result = (strcmp(entry->key, key) == 0) && (entry->value != value);
 
 	entry_destroy(entry);
 
