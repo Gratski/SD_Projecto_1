@@ -60,19 +60,24 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	// lista vazia
 	if (list->head == NULL)
 		list->head = node;
-	// adicionar no ao inicio da lista
+
+	// adicionar no ao inicio da lista se nao existe
 	else if (strcmp(entry->key, list->head->entry->key) < 0) {
 		node->next = list->head;
 		list->head = node;
-	} else {
+	}
+
+	else {
+		
 		int str_cmp;
 
 		// encontrar posicao para o novo no
-		do {
+		do
+		{
 			str_cmp = strcmp(entry->key, current->entry->key);
 			previous = current;
 			current = current->next;
-		} while (current != NULL && str_cmp > 0);
+		} while( str_cmp > 0 && current != NULL );
 
 		// key jah presente na lista
 		if (str_cmp == 0)
