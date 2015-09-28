@@ -53,6 +53,7 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	// preparar node a ser inserido na lista
 	node->entry = entry;
 	node->next = NULL;
+	
 
 	struct node_t* current = current = list->head;
 	struct node_t* previous = current;
