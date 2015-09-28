@@ -42,73 +42,52 @@ void list_destroy(struct list_t *list){
 
 
 int list_add(struct list_t *list, struct entry_t *entry){
-	if (list == NULL || entry == NULL)
+	if (list == NULL)
 		return -1;
 
-	struct node_t *node = (struct node_t *) malloc(sizeof( struct node_t ));
+	struct node_t* node = malloc(sizeof (struct node_t));
 
 	if (node == NULL)
 		return -1;
 
+	// preparar node a ser inserido na lista
 	node->entry = entry;
+	node->next = NULL;
+
+	struct node_t* current = current = list->head;
+	struct node_t* previous = current;
 
 	// lista vazia
-	if( list->size == 0 )
-	{
+	if (list->head == NULL)
 		list->head = node;
-		node->next = NULL;
-		list->size += 1;
-	}
-	// se jah tem elementos
-	else
-	{
-		int added = 0;
-		struct node_t *cur = list->head;
-		struct node_t *auxPrev = NULL;
+	// adicionar no ao inicio da lista
+	else if (strcmp(entry->key, list->head->entry->key) < 0) {
+		node->next = list->head;
+		list->head = node;
+	} else {
+		int str_cmp;
 
-		while( cur != NULL )
-		{
-			int str_cmp = strcmp(entry->key, cur->entry->key);
+		// encontrar posicao para o novo no
+		do {
+			str_cmp = strcmp(entry->key, current->entry->key);
+			previous = current;
+			current = current->next;
+		} while (current != NULL && str_cmp > 0);
 
-			// adicionar elemento ah lista
-			if ( str_cmp < 0 )
-			{
-				node->next = cur;
-
-				if( auxPrev != NULL )
-					auxPrev->next = node;
-				// lista encontra se vazia
-				else
-					list->head = node;
-
-				list->size += 1;
-				added = 1;
-				break;
-			}
-			// key jah presente na lista (nao se substitui)
-			else if( str_cmp == 0 )
-			{
-				break;
-				/*
-				entry_destroy(cur->entry);
-				cur->entry = entry;
-				*/
-			}
-
-			auxPrev = cur;
-			cur = cur->next;
-		}
-
-		// se chegou ao fim sem adicionar
-		if (added == 0)
-		{
-			auxPrev->next = node;
-			node->next = NULL;
+		// key jah presente na lista
+		if (str_cmp == 0)
 			return -1;
+		// adicionar no ao final da lista
+		else if (current == NULL)
+			previous->next = node;
+		// adicionar no noutra posicao
+		else {
+			node->next = current;
+			previous->next = node;
 		}
 	}
 
-	//list->size = list->size + 1;
+	list->size += 1;
 	return 0;
 }
 
@@ -186,7 +165,7 @@ char **list_get_keys(struct list_t *list){
 		return NULL;
 
 	// array com tamanho para todos os pointers para strings
-	char **arr = malloc(sizeof(char *) * (list_size(list) + 1));
+	char **arr = malloc(sizeof(char *) * list_size(list) + 1);
 
 	if (arr == NULL)
 		return NULL;
