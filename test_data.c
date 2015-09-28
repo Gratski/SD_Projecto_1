@@ -26,6 +26,7 @@ int testCreate2() {
                  (data->datasize == data_size);
 
 	data_destroy(data);
+	free(data_s);
 
 	printf("Modulo data -> teste data_create2: %s\n",result?"passou":"nao passou");
 	return result;
@@ -44,6 +45,7 @@ int testDup() {
 
 	data_destroy(data);
 	data_destroy(data2);
+	free(data_s);
 
 	printf("Modulo data -> teste data_dup: %s\n",result?"passou":"nao passou");
 	return result;
