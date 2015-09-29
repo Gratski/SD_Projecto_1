@@ -6,9 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* view .h doc */
 struct list_t *list_create(){
-
 	struct list_t *list = (struct list_t *) malloc(sizeof(struct list_t));
 
 	// se nao tem espaco de memoria
@@ -23,18 +21,17 @@ struct list_t *list_create(){
 
 
 void list_destroy(struct list_t *list){
-	if( list == NULL )
+	if(list == NULL)
 		return;
 
 	struct node_t *cur = list->head;
-	struct node_t *aux = list->head;
+	struct node_t *aux;
 
 	while(cur != NULL){
-		entry_destroy(cur->entry);
-		cur = cur->next;
-
-		free(aux);
 		aux = cur;
+		cur = cur->next;
+		entry_destroy(aux->entry);
+		free(aux);
 	}
 
 	free(list);
@@ -42,7 +39,7 @@ void list_destroy(struct list_t *list){
 
 
 int list_add(struct list_t *list, struct entry_t *entry){
-	if (list == NULL)
+	if (list == NULL || entry == NULL)
 		return -1;
 
 	struct node_t* node = (struct node_t *) malloc(sizeof (struct node_t));
@@ -51,12 +48,11 @@ int list_add(struct list_t *list, struct entry_t *entry){
 		return -1;
 
 	// preparar node a ser inserido na lista
-	node->entry = entry;
+	node->entry = entry_dup(entry);
 	node->next = NULL;
 
-
-	struct node_t* current = list->head;
-	struct node_t* previous = current;
+	struct node_t *current  = list->head;
+	struct node_t *previous = current;
 
 	// lista vazia
 	if (list->head == NULL)
@@ -69,15 +65,14 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	}
 
 	else {
-		
 		int str_cmp;
 
 		// encontrar posicao para o novo no
 		do
 		{
-			str_cmp = strcmp(entry->key, current->entry->key);
+			str_cmp  = strcmp(entry->key, current->entry->key);
 			previous = current;
-			current = current->next;
+			current  = current->next;
 		} while( str_cmp > 0 && current != NULL );
 
 		// key jah presente na lista
@@ -98,7 +93,6 @@ int list_add(struct list_t *list, struct entry_t *entry){
 }
 
 
-/* view .h doc */
 int list_remove(struct list_t *list, char *key){
 
 	// se estah vazia ou nao foi alocada
@@ -134,7 +128,7 @@ int list_remove(struct list_t *list, char *key){
 	return -1;
 }
 
-/* view .h doc */
+
 struct entry_t *list_get(struct list_t *list, char *key){
 	if (list == NULL || key == NULL)
 		return NULL;
@@ -155,7 +149,7 @@ struct entry_t *list_get(struct list_t *list, char *key){
 	return NULL;
 }
 
-/* view .h doc */
+
 int list_size(struct list_t *list){
 
 	// se erro
@@ -166,7 +160,7 @@ int list_size(struct list_t *list){
 		return list->size;
 }
 
-/* view .h doc */
+
 char **list_get_keys(struct list_t *list){
 	if (list == NULL)
 		return NULL;
@@ -179,10 +173,10 @@ char **list_get_keys(struct list_t *list){
 
 	//primeiro node da lista
 	struct node_t *cur = list->head;
-	int i = 0;
+	int i;
 
 	//ciclo para obter as keys da lista
-	while( cur != NULL )
+	for(i = 0; cur != NULL; i++)
 	{
 		// escreve em indice "i" a current entry key
 		arr[i] = strdup(cur->entry->key);
@@ -190,7 +184,6 @@ char **list_get_keys(struct list_t *list){
 		//avança pointer de lista
 		cur = cur->next;
 		//avança indice de array
-		i++;
 	}
 
 	// escreve um null no final para servir de limiter
@@ -198,7 +191,7 @@ char **list_get_keys(struct list_t *list){
 	return arr;
 }
 
-/* view .h doc */
+
 void list_free_keys(char **keys){
 	if (keys == NULL)
 		return;
@@ -211,6 +204,7 @@ void list_free_keys(char **keys){
 	// liberta memoria de array
 	free(keys);
 }
+
 
 /*
 	faz o print da lista ligada
