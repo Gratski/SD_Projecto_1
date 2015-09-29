@@ -2,59 +2,125 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <error.h>
+#include <errno.h>
+#include <assert.h>
+
+/* Sem comentários! Não há tempo... */
 
 int testCreate() {
 	int result;
-	struct data_t *data = data_create(1024);
+	struct data_t *data;
+
+	printf("Módulo data -> teste data_create:");
+
+	assert(data_create(-1) == NULL);
+	result = (data_create(-1) == NULL);
+
+	assert(data_create(4294967295) == NULL);
+	result = result && (data_create(4294967295) == NULL);
+
+	if ((data = data_create(1024)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
 
 	memcpy(data->data,"1234567890a",strlen("1234567890a")+1);
 
-	result = (strcmp(data->data,"1234567890a") == 0) && (data->datasize == 1024);
+	result = result &&
+		 ((strcmp(data->data,"1234567890a") == 0) && (data->datasize == 1024));
 
 	data_destroy(data);
 
-	printf("Modulo data -> teste data_create: %s\n",result?"passou":"nao passou");
+	printf(" %s\n",result ? "passou":"não passou");
 	return result;
 }
 
 int testCreate2() {
-	int result, data_size = strlen("1234567890abc")+1;
-	char *data_s = strdup("1234567890abc");
-	struct data_t *data = data_create2(data_size,data_s);
+	int result, data_size;
+	struct data_t *data;
+	char *data_s = "1234567890abc";
+	data_size = strlen(data_s)+1;
 
-	result = (data->data != data_s) &&
-                 (data->datasize == data_size);
+
+	printf("Módulo data -> teste data_create2:");
+
+	assert(data_create2(-1, data_s) == NULL);
+	result = (data_create2(-1, data_s) == NULL);
+
+	assert(data_create2(data_size, NULL) == NULL);
+	result = result && (data_create2(data_size, NULL) == NULL);
+
+	assert(data_create2(4294967295, data_s) == NULL);
+	result = result && (data_create2(4294967295, data_s) == NULL);
+
+	if ((data = data_create2(data_size, data_s)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	result = result && (data->data != data_s);
+
+	result = result &&
+		 ((strcmp(data->data, data_s) == 0) && (data->datasize == data_size));
 
 	data_destroy(data);
-	free(data_s);
 
-	printf("Modulo data -> teste data_create2: %s\n",result?"passou":"nao passou");
+	printf(" %s\n",result?"passou":"não passou");
 	return result;
 }
 
 int testDup() {
-	int result, data_size = strlen("1234567890abc")+1;
-	char *data_s = strdup("1234567890abc");
-	struct data_t *data = data_create2(data_size,data_s);
+	char *data_s = "1234567890abc";
+	int result, data_size = strlen(data_s)+1;
+	struct data_t *data;
+	struct data_t *data2;
 
-	struct data_t *data2 = data_dup(data);
+	printf("Módulo data -> teste data_dup: ");
 
-	result = (data->data != data2->data) &&
+	assert(data_dup(NULL) == NULL);
+	result = (data_dup(NULL) == NULL);
+
+	if ((data = data_create(1)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	data->datasize = -1;
+
+	assert(data_dup(data) == NULL);
+	result = result && (data_dup(data) == NULL);
+
+	free(data->data);
+	data->data = NULL;
+	assert(data_dup(data) == NULL);
+	result = result && (data_dup(data) == NULL);
+
+	data->datasize = 1;
+	assert(data_dup(data) == NULL);
+	result = result && (data_dup(data) == NULL);
+
+	free(data);
+
+	if ((data = data_create2(data_size,data_s)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	data2 = data_dup(data);
+
+	result = (data->data != data2->data) && 
                  (data->datasize == data2->datasize) &&
                  (memcmp(data->data, data2->data, data->datasize) == 0);
 
 	data_destroy(data);
 	data_destroy(data2);
-	free(data_s);
 
-	printf("Modulo data -> teste data_dup: %s\n",result?"passou":"nao passou");
+	printf(" %s\n",result?"passou":"não passou");
 	return result;
+}
+
+int testDestroy(){
+	data_destroy(NULL);
+	return 1;
 }
 
 int main() {
 	int score = 0;
 
-	printf("Iniciando o teste do modulo data \n");
+	printf("\nIniciando o teste do módulo data \n");
 
 	score += testCreate();
 
@@ -62,7 +128,11 @@ int main() {
 
 	score += testDup();
 
-	printf("Resultado do teste do modulo data: %d/3\n",score);
+	printf("Módulo data -> teste data_destroy:");
+	score += testDestroy();
+	printf(" passou\n");
+
+	printf("\nResultado do teste do módulo data: %d em 4\n\n",score);
 
 	return score;
 }

@@ -1,207 +1,359 @@
-#define NDEBUG
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <error.h>
+#include <errno.h>
 #include <assert.h>
-//#include <unistd.h>
 
-#include "data.h"
-#include "entry.h"
-#include "list.h"
+#include "list-private.h"
+
+int testListDestroy() {
+	printf("Módulo list -> teste destrói lista:");
+	list_destroy(NULL);
+	printf(" passou\n");
+	return 1;
+}
+
+int testListFreeKeys() {
+	printf("Módulo list -> teste destrói keys:");
+	list_free_keys(NULL);
+	printf(" passou\n");
+	return 1;
+}
 
 int testListaVazia() {
-	struct list_t *list = list_create();
+	struct list_t *list;
+	int result;
 
-	int result = list != NULL && list_size(list) == 0;
+	printf("Módulo list -> teste lista vazia:");
+
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	result = (list != NULL) && (list_size(list) == 0);
 
 	list_destroy(list);
+	
+	printf(" %s\n", result ? "passou" : "não passou");
 
-	printf("Modulo list -> teste lista vazia: %s\n",result?"passou":"nao passou");
 	return result;
 }
 
 int testAddCabeca() {
 	int result;
-	struct list_t *list = list_create();
+	struct list_t *list;
 
-	struct entry_t *entry = entry_create(strdup("abc"),data_create(5));
-	memcpy(entry->value->data,"abc1",5);
+	struct entry_t *entry;
+	struct entry_t *entry2;
+	struct data_t *data;
 
-	list_add(list,entry);
+	printf("Módulo list -> teste adicionar cabeça:");
 
-	result = list_get(list,"abc") == entry &&
-                 list_size(list) == 1;
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
 
+	if ((data = data_create(5)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	if ((entry = entry_create("abc", data)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+
+	memcpy(entry->value->data, "abc1", 5);
+
+	assert(list_add(NULL, entry) < 0);
+	result = (list_add(NULL, entry) < 0);
+
+	assert(list_add(list, NULL) < 0);
+	result = result && (list_add(list, NULL) < 0);
+
+	result = result && (list_add(list, entry) == 0);
+
+	entry2 = list_get(list, "abc");
+
+	result = result &&
+		 entry2 != entry && 
+                 list_size(list) == 1 &&
+		 strcmp(entry->key, entry2->key) == 0;
+
+	entry_destroy(entry);
+	data_destroy(data);
 	list_destroy(list);
 
-	printf("Modulo list -> teste adicionar cabeca: %s\n",result?"passou":"nao passou");
+	printf(" %s\n",result ? "passou" : "não passou");
 	return result;
 }
 
 int testAddVarios() {
 	int result,i,keysize;
-	struct list_t *list = list_create();
+	struct list_t *list;
 	struct entry_t *entry[1024];
+	struct entry_t *aux;
+	struct data_t *data;
 	char key[16];
 
-	for(i=0; i<1024; i++) {
-		sprintf(key,"keyabc-%d",i);
-		keysize = strlen(key)+1;
-		entry[i] = entry_create(strdup(key),data_create(keysize));
-		memcpy(entry[i]->value->data,key,keysize);
+	printf("Módulo list -> teste adicionar vários:");
 
-		list_add(list,entry[i]);
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	for(i=0; i<1024; i++) {
+		sprintf(key, "keyabc-%d",i);
+		keysize = strlen(key) + 1;
+
+		if ((data = data_create(keysize)) == NULL)
+			error(1, errno, "  O teste não pode prosseguir");
+
+		memcpy(data->data, key, keysize);
+		if ((entry[i] = entry_create(key, data)) == NULL)
+			error(1, errno, "  O teste não pode prosseguir");
+
+		data_destroy(data);
+		list_add(list, entry[i]);
 	}
 
 	assert(list_size(list) == 1024);
 	result = (list_size(list) == 1024);
 
 	for(i=0; i<1024; i++) {
-		assert(list_get(list,entry[i]->key) == entry[i]);
-		result = result && (list_get(list,entry[i]->key) == entry[i]);
+		assert(list_get(list, entry[i]->key) != entry[i]);
+		aux = list_get(list, entry[i]->key);
+		result = result &&
+			 (aux != entry[i]) &&
+			 strcmp(aux->key, entry[i]->key) == 0;
+		entry_destroy(entry[i]);
 	}
 
 	list_destroy(list);
 
-	printf("Modulo list -> teste adicionar varios: %s\n",result?"passou":"nao passou");
+	printf(" %s\n", result ? "passou" : "não passou");
 	return result;
 }
 
 
 int testRemoveCabeca() {
 	int result;
-	struct list_t *list = list_create();
+	struct list_t *list;
+	struct entry_t *e1, *e2, *e3, *entry;
+	struct data_t *data;
 
-	struct entry_t *e1 = entry_create(strdup("abc"),data_create(5)),
-                       *e2 = entry_create(strdup("def"),data_create(5)),
-                       *e3 = entry_create(strdup("ghi"),data_create(5));
-	memcpy(e1->value->data,"abc1",5);
-	memcpy(e2->value->data,"def1",5);
-	memcpy(e3->value->data,"ghi1",5);
+	printf("Módulo list -> teste remover cabeça:");
+
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	if ((data = data_create(5)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	e1 = entry_create("abc", data);
+	e2 = entry_create("def", data);
+	e3 = entry_create("ghi", data);
+
+	if (e1 == NULL || e2 == NULL || e3 == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	memcpy(e1->value->data, "abc1", 5);
+	memcpy(e2->value->data, "def1", 5);
+	memcpy(e3->value->data, "ghi1", 5);
 
 	list_add(list,e1);
 	list_add(list,e2);
 	list_add(list,e3);
 
-	result = list_remove(list,"ghi") == 0 &&
-                 list_get(list,"def") == e2 &&
-                 list_get(list,"abc") == e1 &&
-                 list_size(list) == 2;
+	assert(list_remove(NULL, "abc") < 0);
+	result = (list_remove(NULL, "abc") < 0);
+
+	assert(list_remove(list, NULL) < 0);
+	result = result && (list_remove(list, NULL) < 0);
+
+	result = result &&
+		 list_remove(list, "abc") == 0 &&
+		 list_size(list) == 2;
+
+	entry = list_get(list, "def");
+	result = result &&
+		 entry != e2 &&
+		 strcmp(entry->key, e2->key) == 0;
+
+	entry = list_get(list, "ghi");
+	result = result &&
+		 entry != e3 &&
+		 strcmp(entry->key, e3->key) == 0;
 
 	list_destroy(list);
+	entry_destroy(e1);
+	entry_destroy(e2);
+	entry_destroy(e3);
+	data_destroy(data);
 
-	printf("Modulo list -> teste remover cabeca: %s\n",result?"passou":"nao passou");
+	printf(" %s\n", result ? "passou" : "não passou");
 	return result;
 }
 
 int testRemoveCauda() {
 	int result;
-	struct list_t *list = list_create();
+	struct list_t *list;
+	struct entry_t *e1, *e2, *e3, *entry;
+	struct data_t *data;
 
-	struct entry_t *e1 = entry_create(strdup("abc"),data_create(5)),
-                       *e2 = entry_create(strdup("def"),data_create(5)),
-                       *e3 = entry_create(strdup("ghi"),data_create(5));
+	printf("Módulo list -> teste remover cauda:");
 
-	memcpy(e1->value->data,"abc1",5);
-	memcpy(e2->value->data,"def1",5);
-	memcpy(e3->value->data,"ghi1",5);
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	if ((data = data_create(5)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	e1 = entry_create("abc", data);
+	e2 = entry_create("def", data);
+	e3 = entry_create("ghi", data);
+
+	if (e1 == NULL || e2 == NULL || e3 == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	memcpy(e1->value->data, "abc1", 5);
+	memcpy(e2->value->data, "def1", 5);
+	memcpy(e3->value->data, "ghi1", 5);
 
 	list_add(list,e1);
 	list_add(list,e2);
 	list_add(list,e3);
 
-	result = list_remove(list,"abc") == 0 &&
-                 list_get(list,"ghi") == e3 &&
-                 list_get(list,"def") == e2 &&
-                 list_size(list) == 2;
+	result = list_remove(list, "ghi") == 0 &&
+		 list_size(list) == 2;
+
+	entry = list_get(list, "def");
+	result = result &&
+		 entry != e2 &&
+		 strcmp(entry->key, e2->key) == 0;
+
+	entry = list_get(list, "abc");
+	result = result &&
+		 entry != e1 &&
+		 strcmp(entry->key, e1->key) == 0;
 
 	list_destroy(list);
+	entry_destroy(e1);
+	entry_destroy(e2);
+	entry_destroy(e3);
+	data_destroy(data);
 
-	printf("Modulo list -> teste remover cauda: %s\n",result?"passou":"nao passou");
+	printf(" %s\n", result ? "passou" : "não passou");
 	return result;
 }
 
 int testRemoveMeio() {
 	int result;
-	struct list_t *list = list_create();
+	struct list_t *list;
+	struct entry_t *e1, *e2, *e3, *entry;
+	struct data_t *data;
 
-	struct entry_t *e1 = entry_create(strdup("abc"),data_create(5)),
-                       *e2 = entry_create(strdup("def"),data_create(5)),
-                       *e3 = entry_create(strdup("ghi"),data_create(5));
+	printf("Módulo list -> teste remover meio:");
 
-	memcpy(e1->value->data,"abc1",5);
-	memcpy(e2->value->data,"def1",5);
-	memcpy(e3->value->data,"ghi1",5);
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	if ((data = data_create(5)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	e1 = entry_create("abc", data);
+	e2 = entry_create("def", data);
+	e3 = entry_create("ghi", data);
+
+	if (e1 == NULL || e2 == NULL || e3 == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	memcpy(e1->value->data, "abc1", 5);
+	memcpy(e2->value->data, "def1", 5);
+	memcpy(e3->value->data, "ghi1", 5);
 
 	list_add(list,e1);
 	list_add(list,e2);
 	list_add(list,e3);
 
-	result = list_remove(list,"def") == 0 &&
-                 list_get(list,"abc") == e1 &&
-                 list_get(list,"ghi") == e3 &&
-                 list_size(list) == 2;
+	result = list_remove(list, "def") == 0 &&
+		 list_size(list) == 2;
+
+	entry = list_get(list, "abc");
+	result = result &&
+		 entry != e1 &&
+		 strcmp(entry->key, e1->key) == 0;
+
+	entry = list_get(list, "ghi");
+	result = result &&
+		 entry != e3 &&
+		 strcmp(entry->key, e3->key) == 0;
 
 	list_destroy(list);
+	entry_destroy(e1);
+	entry_destroy(e2);
+	entry_destroy(e3);
+	data_destroy(data);
 
-	printf("Modulo list -> teste remover meio: %s\n",result?"passou":"nao passou");
+	printf(" %s\n", result ? "passou" : "não passou");
 	return result;
 }
 
 int testGetKeys() {
 	int result;
-	struct list_t *list = list_create();
-	char *key, **keys;
-	struct entry_t *e1 = entry_create(strdup("abc"),data_create(5)),
-                       *e2 = entry_create(strdup("123"),data_create(5)),
-                       *e3 = entry_create(strdup("ghi"),data_create(5));
+	struct list_t *list;
+	struct entry_t *e1, *e2, *e3;
+	struct data_t *data;
+	char **keys;
 
-	memcpy(e1->value->data,"abc1",5);
-	memcpy(e2->value->data,"def1",5);
-	memcpy(e3->value->data,"ghi1",5);
+	printf("Módulo list -> teste busca chaves:");
+
+	if ((list = list_create()) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	if ((data = data_create(5)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	assert(list_get_keys(NULL) == NULL);
+	result = (list_get_keys(NULL) == NULL);
+
+	e1 = entry_create("abc", data);
+	e2 = entry_create("def", data);
+	e3 = entry_create("ghi", data);
+
+	if (e1 == NULL || e2 == NULL || e3 == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
+
+	memcpy(e1->value->data, "abc1", 5);
+	memcpy(e2->value->data, "def1", 5);
+	memcpy(e3->value->data, "ghi1", 5);
 
 	list_add(list,e1);
 	list_add(list,e2);
 	list_add(list,e3);
 
-	// array ordenado por ordem ascendente
-	keys = list_get_keys(list);
+	if ((keys = list_get_keys(list)) == NULL)
+		error(1, errno, "  O teste não pode prosseguir");
 
-	printf("key e1: %s\n", e1->key);
-	printf("key e2: %s\n", e2->key);
-	printf("key e3: %s\n", e3->key);
-	puts("---");
-	printf("key a1: %s\n", keys[0]);
-	printf("key a2: %s\n", keys[1]);
-	printf("key a3: %s\n", keys[2]);
-	puts("---");
-	printf("key 0: %d\n", strcmp(keys[0],e2->key) == 0);
-	printf("key 1: %d\n", strcmp(keys[1],e1->key) == 0);
-	printf("key 2: %d\n", strcmp(keys[2],e3->key) == 0);
-	printf("key 3: %d\n", keys[3] == NULL);
-
-	result = strcmp(keys[0],e2->key) == 0 && keys[0] != e2->key &&
-                 strcmp(keys[1],e1->key) == 0 && keys[1] != e1->key &&
-                 strcmp(keys[2],e3->key) == 0 && keys[2] != e3->key &&
+	result = strcmp(keys[0], e1->key) == 0 && keys[0] != e1->key &&
+                 strcmp(keys[1], e2->key) == 0 && keys[1] != e2->key && 
+                 strcmp(keys[2], e3->key) == 0 && keys[2] != e3->key && 
                  keys[3] == NULL;
 
-	//TODO nao funciona
 	list_free_keys(keys);
-
 	list_destroy(list);
+	entry_destroy(e1);
+	entry_destroy(e2);
+	entry_destroy(e3);
+	data_destroy(data);
 
-	printf("Modulo list -> teste sacar chaves: %s\n",result?"passou":"nao passou");
+	printf(" %s\n", result ? "passou" : "não passou");
 	return result;
 }
-
-
 
 int main() {
 	int score = 0;
 
-	printf("Iniciando o teste do modulo list\n");
+	printf("\nIniciando o teste do módulo list\n\n");
 
+	score += testListDestroy();
+
+	score += testListFreeKeys();
 
 	score += testListaVazia();
 
@@ -217,7 +369,7 @@ int main() {
 
 	score += testGetKeys();
 
-	printf("Resultados do teste do modulo list: %d/7\n",score);
+	printf("\nResultados do teste do modulo list: %d em 9\n",score);
 
 	return score;
 }
