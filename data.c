@@ -30,7 +30,7 @@ struct data_t *data_create2(int size, void * data){
 
 	// se nao tem memoria suficiente
 	if ( d == NULL )
-		return NULL
+		return NULL;
 
 	memcpy(d->data, data, d->datasize);
 	return d;
