@@ -6,6 +6,8 @@
 
 /* view .h doc */
 struct data_t *data_create(int size){
+	if (size < 0)
+		return NULL;
 
 	struct data_t *d = (struct data_t *) malloc(sizeof( struct data_t ));
 	d->datasize = size;
@@ -17,6 +19,8 @@ struct data_t *data_create(int size){
 
 /* view .h doc */
 struct data_t *data_create2(int size, void * data){
+	if (size < 0 || data == NULL)
+		return NULL;
 
 	struct data_t *d = data_create(size);
 	memcpy(d->data, data, d->datasize);
@@ -26,6 +30,8 @@ struct data_t *data_create2(int size, void * data){
 
 /* view .h doc */
 void data_destroy(struct data_t *data){
+	if (data == NULL)
+		return;
 
 	// se a data foi alocada
 	if( data->data != NULL ){
@@ -38,6 +44,8 @@ void data_destroy(struct data_t *data){
 
 /* view .h doc */
 struct data_t *data_dup(struct data_t *data){
+	if (data == NULL)
+		return NULL;
 
 	return data_create2(data->datasize, data->data);
 
