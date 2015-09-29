@@ -6,6 +6,8 @@
 
 /* view .h doc */
 struct entry_t *entry_create(char *key, struct data_t *data){
+	if (key == NULL || data == NULL)
+		return NULL;
 
 	//aqui falar com o prof prq falta um arg
 	struct entry_t *e = (struct entry_t *) malloc( sizeof( struct entry_t ) );
@@ -17,7 +19,8 @@ struct entry_t *entry_create(char *key, struct data_t *data){
 
 /* view .h doc */
 void entry_destroy(struct entry_t *entry){
-
+	if (entry == NULL)
+		return;
 
 	// liberta data_t
 	data_destroy(entry->value);
@@ -30,8 +33,10 @@ void entry_destroy(struct entry_t *entry){
 
 /* view .h doc */
 struct entry_t *entry_dup(struct entry_t *entry){
+	if (entry == NULL)
+		return NULL;
 
 	// cria nova struct
 	return entry_create(entry->key, entry->value);
-	
+
 }
