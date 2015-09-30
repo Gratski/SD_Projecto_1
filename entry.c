@@ -1,3 +1,9 @@
+/* 	-- Grupo 3 --
+	João Gouveia 	nº 45679
+	João Rodrigues	nº 45582
+	Pedro Luís 		nº 45588
+*/
+
 #include "entry.h"
 #include "data.h"
 #include <stdlib.h>

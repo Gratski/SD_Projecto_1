@@ -1,3 +1,9 @@
+/* 	-- Grupo 3 --
+	João Gouveia 	nº 45679
+	João Rodrigues	nº 45582
+	Pedro Luís 		nº 45588
+*/
+
 #include "list.h"
 #include "list-private.h"
 #include "entry.h"
@@ -55,13 +61,16 @@ int list_add(struct list_t *list, struct entry_t *entry){
 	struct node_t *previous = current;
 
 	// lista vazia
-	if (list->head == NULL)
+	if (list->head == NULL) {
 		list->head = node;
+		list->size++;
+	}
 
 	// adicionar no ao inicio da lista se nao existe
 	else if (strcmp(entry->key, list->head->entry->key) < 0) {
 		node->next = list->head;
 		list->head = node;
+		list->size++;
 	}
 
 	else {
@@ -79,22 +88,23 @@ int list_add(struct list_t *list, struct entry_t *entry){
 		if (str_cmp == 0)
 			return -1;
 		// adicionar no ao final da lista
-		else if (current == NULL)
+		else if (current == NULL) {
 			previous->next = node;
+			list->size++;
+		}
 		// adicionar no noutra posicao
 		else {
 			node->next = current;
 			previous->next = node;
+			list->size++;
 		}
 	}
 
-	list->size += 1;
 	return 0;
 }
 
 
 int list_remove(struct list_t *list, char *key){
-
 	// se estah vazia ou nao foi alocada
 	if ( list == NULL || list->size == 0 || key == NULL)
 		return -1;
@@ -151,7 +161,6 @@ struct entry_t *list_get(struct list_t *list, char *key){
 
 
 int list_size(struct list_t *list){
-
 	// se erro
 	if( list == NULL )
 		return -1;
@@ -166,10 +175,13 @@ char **list_get_keys(struct list_t *list){
 		return NULL;
 
 	// array com tamanho para todos os pointers para strings
-	char **arr = malloc(sizeof(char *) * list_size(list) + 1);
+	char **arr = (char **) malloc(sizeof(char *) * (list_size(list) + 1));
 
 	if (arr == NULL)
 		return NULL;
+
+	// escreve um null no final para servir de limiter
+	arr[list_size(list)] = NULL;
 
 	//primeiro node da lista
 	struct node_t *cur = list->head;
@@ -181,13 +193,20 @@ char **list_get_keys(struct list_t *list){
 		// escreve em indice "i" a current entry key
 		arr[i] = strdup(cur->entry->key);
 
+		// falha ao alocar memoria para uma key
+		if (arr[i] == NULL) {
+			int j;
+			// libertar memoria alocada pelas keys anteriores
+			for (j = 0; j < i; j++)
+				free(arr[j]);
+
+			return NULL;
+		}
+
 		//avança pointer de lista
 		cur = cur->next;
-		//avança indice de array
 	}
 
-	// escreve um null no final para servir de limiter
-	arr[i] = NULL;
 	return arr;
 }
 

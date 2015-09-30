@@ -1,12 +1,18 @@
+/* 	-- Grupo 3 --
+	João Gouveia 	nº 45679
+	João Rodrigues	nº 45582
+	Pedro Luís 		nº 45588
+*/
+
 #ifndef _LIST_PRIVATE_H
 #define _LIST_PRIVATE_H
 
 #include "list.h"
 
-/* No de uma lista duplamente ligada */
+/* No de uma lista ligada */
 struct node_t{
 	struct entry_t *entry;	// entry
-	struct node_t *next;		// proxima entry
+	struct node_t *next;		// proximo no da lista
 };
 
 /* ver list.h doc */
