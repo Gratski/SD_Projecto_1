@@ -13,13 +13,13 @@ clean:
 
 
 
-test_data: test_data.o data.o
+test_data: $(O_FILES)/test_data.o $(O_FILES)/data.o
 	$(CC) $(CFLAGS) -o test_data $(O_FILES)/test_data.o $(O_FILES)/data.o
 
-test_entry: test_entry.o data.o entry.o
+test_entry: $(O_FILES)/test_entry.o $(O_FILES)/data.o $(O_FILES)/entry.o
 	$(CC) $(CFLAGS) -o test_entry $(O_FILES)/test_entry.o $(O_FILES)/data.o $(O_FILES)/entry.o
 
-test_list: test_list.o data.o entry.o list.o
+test_list: $(O_FILES)/test_list.o $(O_FILES)/data.o $(O_FILES)/entry.o $(O_FILES)/list.o
 	$(CC) $(CFLAGS) -o test_list $(O_FILES)/test_list.o $(O_FILES)/data.o $(O_FILES)/entry.o $(O_FILES)/list.o
 
 # compile: main.o data.o entry.o list.o
