@@ -1,0 +1,19 @@
+------------ Grupo 3 -----------------              
+----- João Gouveia 	    nº 45679 -----                    
+----- João Rodrigues	nº 45582 -----                    
+----- Pedro Luís 		nº 45588 -----                   
+--------------------------------------                    
+
+Para correr os testes executar as seguintes instruções na raiz do projecto:
+
+Testes da estrutura data_t:     
+    make test_data
+    valgrind --track-origins=yes --tool=memcheck --leak-check=yes ./test_data
+
+Testes da estrutura entry_t: 
+    make test_entry
+    valgrind --track-origins=yes --tool=memcheck --leak-check=yes ./test_entry
+
+Testes da estrutura list_t: 
+    make test_list
+    valgrind --track-origins=yes --tool=memcheck --leak-check=yes ./test_list
