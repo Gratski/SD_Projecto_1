@@ -7,6 +7,8 @@
 #ifndef _LIST_PRIVATE_H
 #define _LIST_PRIVATE_H
 
+#include "data.h"
+#include "entry.h"
 #include "list.h"
 
 /* No de uma lista ligada */

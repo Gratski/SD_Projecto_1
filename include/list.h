@@ -3,8 +3,7 @@
 
 #include "entry.h"
 
-/* view .h doc */
-struct list_t;
+struct list_t; /*A definir pelo grupo em list-private.h*/
 
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
  */
@@ -44,6 +43,5 @@ char **list_get_keys(struct list_t *list);
 /* Liberta a memoria reservada por list_get_keys.
  */
 void list_free_keys(char **keys);
-
 
 #endif
