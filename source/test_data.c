@@ -1,10 +1,11 @@
-#include "data.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <error.h>
 #include <errno.h>
 #include <assert.h>
+
+#include "data.h"
 
 /* Sem comentários! Não há tempo... */
 
@@ -17,9 +18,6 @@ int testCreate() {
 	assert(data_create(-1) == NULL);
 	result = (data_create(-1) == NULL);
 
-	assert(data_create(4294967295) == NULL);
-	result = result && (data_create(4294967295) == NULL);
-
 	if ((data = data_create(1024)) == NULL)
 		error(1, errno, "  O teste não pode prosseguir");
 
@@ -29,7 +27,6 @@ int testCreate() {
 		 ((strcmp(data->data,"1234567890a") == 0) && (data->datasize == 1024));
 
 	data_destroy(data);
-
 	printf(" %s\n",result ? "passou":"não passou");
 	return result;
 }
@@ -48,9 +45,6 @@ int testCreate2() {
 
 	assert(data_create2(data_size, NULL) == NULL);
 	result = result && (data_create2(data_size, NULL) == NULL);
-
-	assert(data_create2(4294967295, data_s) == NULL);
-	result = result && (data_create2(4294967295, data_s) == NULL);
 
 	if ((data = data_create2(data_size, data_s)) == NULL)
 		error(1, errno, "  O teste não pode prosseguir");

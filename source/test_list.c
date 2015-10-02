@@ -40,6 +40,7 @@ int testListaVazia() {
 }
 
 int testAddCabeca() {
+	
 	int result;
 	struct list_t *list;
 
@@ -79,12 +80,13 @@ int testAddCabeca() {
 	entry_destroy(entry);
 	data_destroy(data);
 	list_destroy(list);
-
 	printf(" %s\n",result ? "passou" : "não passou");
 	return result;
+	
 }
 
 int testAddVarios() {
+	
 	int result,i,keysize;
 	struct list_t *list;
 	struct entry_t *entry[1024];
@@ -110,8 +112,8 @@ int testAddVarios() {
 
 		data_destroy(data);
 		list_add(list, entry[i]);
+		
 	}
-
 	assert(list_size(list) == 1024);
 	result = (list_size(list) == 1024);
 
@@ -127,11 +129,13 @@ int testAddVarios() {
 	list_destroy(list);
 
 	printf(" %s\n", result ? "passou" : "não passou");
+	
 	return result;
 }
 
 
 int testRemoveCabeca() {
+
 	int result;
 	struct list_t *list;
 	struct entry_t *e1, *e2, *e3, *entry;
@@ -148,7 +152,7 @@ int testRemoveCabeca() {
 	e1 = entry_create("abc", data);
 	e2 = entry_create("def", data);
 	e3 = entry_create("ghi", data);
-
+	
 	if (e1 == NULL || e2 == NULL || e3 == NULL)
 		error(1, errno, "  O teste não pode prosseguir");
 
@@ -159,10 +163,10 @@ int testRemoveCabeca() {
 	list_add(list,e1);
 	list_add(list,e2);
 	list_add(list,e3);
-
+	
 	assert(list_remove(NULL, "abc") < 0);
 	result = (list_remove(NULL, "abc") < 0);
-
+	
 	assert(list_remove(list, NULL) < 0);
 	result = result && (list_remove(list, NULL) < 0);
 
@@ -174,7 +178,7 @@ int testRemoveCabeca() {
 	result = result &&
 		 entry != e2 &&
 		 strcmp(entry->key, e2->key) == 0;
-
+	
 	entry = list_get(list, "ghi");
 	result = result &&
 		 entry != e3 &&
@@ -191,6 +195,7 @@ int testRemoveCabeca() {
 }
 
 int testRemoveCauda() {
+
 	int result;
 	struct list_t *list;
 	struct entry_t *e1, *e2, *e3, *entry;
@@ -295,6 +300,7 @@ int testRemoveMeio() {
 }
 
 int testGetKeys() {
+	
 	int result;
 	struct list_t *list;
 	struct entry_t *e1, *e2, *e3;
