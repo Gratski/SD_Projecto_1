@@ -6,7 +6,7 @@ H_FILES = include
 CFLAGS = -g -Wall -I$(H_FILES)
 
 clean:
-	rm -f *.o
+	rm -f *.o && rm -f test_data && rm -f test_entry && rm -f test_list
 
 
 
