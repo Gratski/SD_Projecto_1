@@ -1,1 +1,0 @@
-valgrind --track-origins=yes --tool=memcheck --leak-check=yes ./test_data
