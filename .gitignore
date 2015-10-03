@@ -1,3 +1,7 @@
 *.o
 .DS_Store
 
+test_data
+test_entry
+test_list
+
