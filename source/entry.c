@@ -15,11 +15,29 @@ struct entry_t *entry_create(char *key, struct data_t *data){
 		return NULL;
 
 	struct entry_t *e = (struct entry_t *) malloc(sizeof(struct entry_t));
-	e->key   = strdup(key);
+
+	if (e == NULL)
+		return NULL;
+
+	e->key = strdup(key);
+
+	if (e->key == NULL) {
+		free(e);
+		return NULL;
+	}
+
 	e->value = data_dup(data);
+
+	if (e->value == NULL) {
+		free(e->key);
+		free(e);
+		return NULL;
+	}
+
 	return e;
 
 }
+
 
 void entry_destroy(struct entry_t *entry){
 	if (entry == NULL)
@@ -36,6 +54,7 @@ void entry_destroy(struct entry_t *entry){
 	free(entry);
 
 }
+
 
 struct entry_t *entry_dup(struct entry_t *entry){
 	if (entry == NULL)

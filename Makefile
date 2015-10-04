@@ -1,5 +1,9 @@
-CC = gcc
+# 	    -- Grupo 3 --
+#	João Gouveia 	nº 45679
+#	João Rodrigues	nº 45582
+#	Pedro Luís 		nº 45588
 
+CC = gcc
 O_FILES = object
 C_FILES = source
 H_FILES = include
@@ -9,8 +13,6 @@ all: test_data test_entry test_list
 
 clean:
 	rm -f object/*.o && rm -f test_data && rm -f test_entry && rm -f test_list
-
-
 
 test_data: $(O_FILES)/test_data.o $(O_FILES)/data.o
 	$(CC) $(CFLAGS) -o test_data $(O_FILES)/test_data.o $(O_FILES)/data.o
@@ -22,7 +24,7 @@ test_list: $(O_FILES)/test_list.o $(O_FILES)/data.o $(O_FILES)/entry.o $(O_FILES
 	$(CC) $(CFLAGS) -o test_list $(O_FILES)/test_list.o $(O_FILES)/data.o $(O_FILES)/entry.o $(O_FILES)/list.o
 
 
-# Testes
+# Testes das structs
 $(O_FILES)/test_data.o: $(C_FILES)/test_data.c $(H_FILES)/data.h
 	$(CC) $(CFLAGS) -c $(C_FILES)/test_data.c -o $(O_FILES)/test_data.o
 
