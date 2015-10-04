@@ -27,6 +27,7 @@ int testCreate() {
 		 ((strcmp(data->data,"1234567890a") == 0) && (data->datasize == 1024));
 
 	data_destroy(data);
+
 	printf(" %s\n",result ? "passou":"não passou");
 	return result;
 }
