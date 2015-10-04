@@ -55,6 +55,12 @@ int list_add(struct list_t *list, struct entry_t *entry){
 
 	// preparar node a ser inserido na lista
 	node->entry = entry_dup(entry);
+
+	if (node->entry == NULL) {
+		free(node);
+		return -1;
+	}
+
 	node->next = NULL;
 
 	struct node_t *current  = list->head;
@@ -110,7 +116,7 @@ int list_remove(struct list_t *list, char *key){
 		return -1;
 
 	struct node_t *cur = list->head;
-	struct node_t *auxPrev = NULL;		// aponta para o indice anterior ao actual
+	struct node_t *auxPrev = NULL;	// aponta para o indice anterior ao actual
 
 	while( cur != NULL )
 	{
@@ -199,6 +205,9 @@ char **list_get_keys(struct list_t *list){
 			// libertar memoria alocada pelas keys anteriores
 			for (j = 0; j < i; j++)
 				free(arr[j]);
+
+			// libertar array de keys
+			free(arr);
 
 			return NULL;
 		}
